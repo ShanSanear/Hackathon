@@ -1,0 +1,14 @@
+C:\Hackathon\HackathonBase\HackathonBase\obj\Debug\netcoreapp2.1\HackathonBase.csproj.CoreCompileInputs.cache
+C:\Hackathon\HackathonBase\HackathonBase\obj\Debug\netcoreapp2.1\HackathonBase.RazorAssemblyInfo.cache
+C:\Hackathon\HackathonBase\HackathonBase\obj\Debug\netcoreapp2.1\HackathonBase.RazorAssemblyInfo.cs
+C:\Hackathon\HackathonBase\HackathonBase\obj\Debug\netcoreapp2.1\HackathonBase.AssemblyInfoInputs.cache
+C:\Hackathon\HackathonBase\HackathonBase\obj\Debug\netcoreapp2.1\HackathonBase.AssemblyInfo.cs
+C:\Hackathon\HackathonBase\HackathonBase\bin\Debug\netcoreapp2.1\HackathonBase.deps.json
+C:\Hackathon\HackathonBase\HackathonBase\bin\Debug\netcoreapp2.1\HackathonBase.runtimeconfig.json
+C:\Hackathon\HackathonBase\HackathonBase\bin\Debug\netcoreapp2.1\HackathonBase.runtimeconfig.dev.json
+C:\Hackathon\HackathonBase\HackathonBase\bin\Debug\netcoreapp2.1\HackathonBase.dll
+C:\Hackathon\HackathonBase\HackathonBase\obj\Debug\netcoreapp2.1\HackathonBase.RazorTargetAssemblyInfo.cache
+C:\Hackathon\HackathonBase\HackathonBase\bin\Debug\netcoreapp2.1\HackathonBase.pdb
+C:\Hackathon\HackathonBase\HackathonBase\obj\Debug\netcoreapp2.1\HackathonBase.dll
+C:\Hackathon\HackathonBase\HackathonBase\obj\Debug\netcoreapp2.1\HackathonBase.pdb
+C:\Hackathon\HackathonBase\HackathonBase\obj\Debug\netcoreapp2.1\HackathonBase.csprojAssemblyReference.cache
