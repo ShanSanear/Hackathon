@@ -15,7 +15,6 @@ class DataCollector:
     def __init__(self):
         self.stream_infos = {}
         self.stream_objects = {}
-        self.create_data_point()
         self.time_interval = 0.5
 
     def create_data_point(self, device_index=1, device_name="Default stream name"):
