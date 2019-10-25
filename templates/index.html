@@ -8,10 +8,16 @@
 </head>
 <body>
 <div class="container">
+    <div class="my-5 form-inline">
+        <select name="" id="deviceList" class="form-control w-50">
+            <option>Select stream...</option>
+        </select>
+        <button class="btn btn-outline-primary ml-2" id="addChart">Add</button>
+    </div>
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-body">
+                <div class="card-body" id="chartWrapper">
                     <canvas id="canvas"></canvas>
                 </div>
             </div>
@@ -25,7 +31,56 @@
 <!--suppress JSUnresolvedLibraryURL -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
 <script>
+    const DOMElements = {
+        deviceSelectList: 'deviceList',
+        chartWrapper: 'chartWrapper',
+        btnAddChart: 'addChart'
+    };
     $(document).ready(function () {
+        //Used to retrieve list of streams
+        const btnEl = document.getElementById(DOMElements.btnAddChart);
+        btnEl.addEventListener('click', function () {
+            const deviceList = document.getElementById(DOMElements.deviceSelectList);
+            const selectedStreamId = parseInt(deviceList.options[deviceList.selectedIndex].value);
+            if (typeof selectedStreamId == 'number') {
+                createChart(selectedStreamId);
+                const context = document.getElementById(`canvas_${selectedStreamId}`).getContext('2d');
+
+                const lineChart = new Chart(context, config);
+
+                const source = new EventSource(`/chart-data/${selectedStreamId}`);
+                source.onmessage = function (event) {
+                    const threshold = 50;
+                    const data = JSON.parse(event.data);
+                    if (data.value >= threshold) {
+                        config.data.datasets[0].backgroundColor = '#A70200';
+                        config.data.datasets[0].borderColor = '#A70200';
+                    } else {
+                        config.data.datasets[0].backgroundColor = '#00FF0B';
+                        config.data.datasets[0].borderColor = '#00FF0B';
+                    }
+
+                    if (config.data.labels.length === 50) {
+                        config.data.labels.shift();
+                        config.data.datasets[0].data.shift();
+                    }
+                    config.data.labels.push(data.time);
+                    config.data.datasets[0].data.push(data.value);
+                    lineChart.update();
+                }
+            }
+        });
+
+        $.getJSON("http://127.0.0.1:5000/streams", function (data) {
+            console.log(data);
+            $.each(data, function (index, item) {
+                console.log(item.stream_name);
+                $('#deviceList').append(
+                    $('<option></option>').val(item.stream_id).html(item.stream_name)
+                );
+            });
+        });
+
         const config = {
             type: 'line',
             data: {
@@ -96,6 +151,16 @@
             lineChart.update();
         }
     });
+
+    function createChart(stream_id) {
+        let chartWrapper = document.getElementById(DOMElements.chartWrapper);
+        chartWrapper.insertAdjacentHTML("beforeend", getCanvas(stream_id));
+    }
+
+    function getCanvas(stream_id) {
+        return `<canvas id="canvas_${stream_id}"></canvas>`;
+    }
+
 </script>
 </body>
 </html>
