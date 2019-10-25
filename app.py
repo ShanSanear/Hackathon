@@ -72,7 +72,10 @@ def get_audio_devices():
     devices = [device for device in devices if
                'Sound Mapper' not in device['name']
                and device['maxInputChannels']]
-    return devices
+    resp = jsonify(devices)
+    resp.status_code = 200
+    print(resp)
+    return resp
 
 
 if __name__ == '__main__':
