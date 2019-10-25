@@ -13,27 +13,31 @@ from audio import FORMAT, CHANNELS, RATE, CHUNK, RECORD_SECONDS
 
 class DataCollector:
     def __init__(self):
-        self.streams = []
+        self.stream_infos = []
+        self.stream_objects = []
         self.audios = []
         self.create_data_point()
         self.time_interval = 0.5
 
     def create_data_point(self):
-        # start Recording
-
         audio = pyaudio.PyAudio()
         self.audios.append(audio)
         stream = audio.open(format=FORMAT, channels=CHANNELS,
                             rate=RATE, input=True,
                             frames_per_buffer=CHUNK)
-        self.streams.append(stream)
+        stream_info = {
+            "stream_name": "Default stream name",
+            "stream_id": len(self.stream_infos)
+        }
+        self.stream_objects.append(stream)
+        self.stream_infos.append(stream_info)
 
     def read_from_stream(self, stream_number=0):
         frames = []
-        stream = self.streams[stream_number]
+        stream = self.stream_objects[stream_number]['stream']
         stream.start_stream()
         for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
-            data = self.streams[stream_number].read(CHUNK)
+            data = stream.read(CHUNK)
             rms = audioop.rms(data, 2)
 
             frames.append(numpy.log10(rms) * 20)
@@ -68,3 +72,6 @@ class DataCollector:
         if 'time_interval' in configuration:
             time_interval = configuration['time_interval']
             self.time_interval = time_interval
+
+    def get_stream_infos(self):
+        return self.stream_infos

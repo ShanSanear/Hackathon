@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from flask_apscheduler import APScheduler
 
 import atexit
@@ -39,6 +39,13 @@ def change_configuration():
     configuration_data = request.get_json()
     return data_collector.change_configuration(configuration_data)
 
+@app.route('/streams', methods=['GET'])
+def get_streams():
+    message = data_collector.get_stream_infos()
+    resp = jsonify(message)
+    resp.status_code = 200
+    print(resp)
+    return resp
 
 if __name__ == '__main__':
     atexit.register(lambda: cron.shutdown(wait=False))
