@@ -32,15 +32,15 @@
                 labels: [],
                 datasets: [{
                     label: "Sound DB",
-                    backgroundColor: 'rgb(255, 99, 132)',
-                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgb(0,255,11)',
+                    borderColor: 'rgb(0,255,11)',
                     data: [],
                     fill: false,
                 }],
             },
             options: {
                 tooltips: {
-                    enabled : false,
+                    enabled: false,
                     animationEnabled: false
                 },
                 responsive: true,
@@ -76,9 +76,17 @@
         const lineChart = new Chart(context, config);
 
         const source = new EventSource("/chart-data");
-
         source.onmessage = function (event) {
+            const threshold = 50;
             const data = JSON.parse(event.data);
+            if (data.value >= threshold) {
+                config.data.datasets[0].backgroundColor = '#A70200';
+                config.data.datasets[0].borderColor = '#A70200';
+            } else {
+                config.data.datasets[0].backgroundColor = '#00FF0B';
+                config.data.datasets[0].borderColor = '#00FF0B';
+            }
+
             if (config.data.labels.length === 50) {
                 config.data.labels.shift();
                 config.data.datasets[0].data.shift();
