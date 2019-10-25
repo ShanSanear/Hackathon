@@ -26,6 +26,8 @@ class DataCollector:
         self.streams.append(stream)
 
     def read_from_stream(self, stream_number=0):
+        if not self.audios:
+            self.create_data_point()
         frames = []
         stream = self.streams[stream_number]
         stream.start_stream()
@@ -40,7 +42,6 @@ class DataCollector:
 
 app = Flask(__name__)
 data_collector = DataCollector()
-data_collector.create_data_point()
 
 @app.route('/')
 def index():
