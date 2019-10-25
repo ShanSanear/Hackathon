@@ -51,6 +51,18 @@ class DataCollector:
 
         return Response(get_data(), mimetype='text/event-stream')
 
+    def get_single_stream_data(self, stream_number):
+        def get_data():
+            while True:
+                json_data = json.dumps(
+                    {'time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                     'value': data_collector.read_from_stream(stream_number)}
+                )
+                yield f"data:{json_data}\n\n"
+                time.sleep(self.time_interval)
+
+        return Response(get_data(), mimetype='text/event-stream')
+
     def change_configuration(self, configuration):
         if 'time_interval' in configuration:
             time_interval = configuration['time_interval']
@@ -69,6 +81,11 @@ def index():
 @app.route('/chart-data')
 def get_chart_data():
     return data_collector.get_chart_data()
+
+
+@app.route('/chart-data/<stream_number>')
+def get_single_chart_data(stream_number):
+    return data_collector.get_single_stream_data(stream_number)
 
 
 @app.route('/configuration', methods=['POST'])
