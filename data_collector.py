@@ -15,19 +15,18 @@ class DataCollector:
     def __init__(self):
         self.stream_infos = []
         self.stream_objects = []
-        self.audios = []
         self.create_data_point()
         self.time_interval = 0.5
 
-    def create_data_point(self):
+    def create_data_point(self, device_index=1, device_name="Default stream name"):
         audio = pyaudio.PyAudio()
-        self.audios.append(audio)
-        stream = audio.open(format=FORMAT, channels=CHANNELS,
+        stream = audio.open(input_device_index=device_index,
+                            format=FORMAT, channels=CHANNELS,
                             rate=RATE, input=True,
                             frames_per_buffer=CHUNK)
         stream_info = {
-            "stream_name": "Default stream name",
-            "stream_id": len(self.stream_infos)
+            "stream_name": device_name,
+            "stream_id": device_index
         }
         self.stream_objects.append(stream)
         self.stream_infos.append(stream_info)
