@@ -15,6 +15,7 @@ class DataCollector:
     def __init__(self):
         self.streams = []
         self.audios = []
+        self.create_data_point()
 
     def create_data_point(self):
         # start Recording
@@ -26,8 +27,6 @@ class DataCollector:
         self.streams.append(stream)
 
     def read_from_stream(self, stream_number=0):
-        if not self.audios:
-            self.create_data_point()
         frames = []
         stream = self.streams[stream_number]
         stream.start_stream()
