@@ -16,6 +16,7 @@ class DataCollector:
         self.streams = []
         self.audios = []
         self.create_data_point()
+        self.time_interval = 0.5
 
     def create_data_point(self):
         # start Recording
@@ -38,9 +39,23 @@ class DataCollector:
         stream.stop_stream()
         return mean(frames)
 
+    def get_chart_data(self):
+        def get_data():
+            while True:
+                json_data = json.dumps(
+                    {'time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'value': data_collector.read_from_stream()})
+                yield f"data:{json_data}\n\n"
+                time.sleep(self.time_interval)
+
+        return Response(get_data(), mimetype='text/event-stream')
+
+    def change_configuration(self):
+        pass
+
 
 app = Flask(__name__)
 data_collector = DataCollector()
+
 
 @app.route('/')
 def index():
@@ -48,16 +63,13 @@ def index():
 
 
 @app.route('/chart-data')
-def chart_data():
-    def get_data():
-        while True:
-            json_data = json.dumps(
-                {'time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'value': data_collector.read_from_stream()})
-            yield f"data:{json_data}\n\n"
-            time.sleep(0.5)
+def get_chart_data():
+    return data_collector.get_chart_data()
 
-    return Response(get_data(), mimetype='text/event-stream')
 
+@app.route('/configuration')
+def change_configuration():
+    return data_collector.change_configuration()
 
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)
