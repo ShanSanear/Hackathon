@@ -34,7 +34,7 @@ class DataCollector:
 
     def read_from_stream(self, stream_number=0):
         frames = []
-        stream = self.stream_objects[stream_number]['stream']
+        stream = self.stream_objects[stream_number]
         stream.start_stream()
         for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
             data = stream.read(CHUNK)
