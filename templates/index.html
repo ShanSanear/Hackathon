@@ -37,49 +37,6 @@
         btnAddChart: 'addChart'
     };
     $(document).ready(function () {
-        //Used to retrieve list of streams
-        const btnEl = document.getElementById(DOMElements.btnAddChart);
-        btnEl.addEventListener('click', function () {
-            const deviceList = document.getElementById(DOMElements.deviceSelectList);
-            const selectedStreamId = parseInt(deviceList.options[deviceList.selectedIndex].value);
-            if (typeof selectedStreamId == 'number') {
-                createChart(selectedStreamId);
-                const context = document.getElementById(`canvas_${selectedStreamId}`).getContext('2d');
-
-                const lineChart = new Chart(context, config);
-
-                const source = new EventSource(`/chart-data/${selectedStreamId}`);
-                source.onmessage = function (event) {
-                    const threshold = 50;
-                    const data = JSON.parse(event.data);
-                    if (data.value >= threshold) {
-                        config.data.datasets[0].backgroundColor = '#A70200';
-                        config.data.datasets[0].borderColor = '#A70200';
-                    } else {
-                        config.data.datasets[0].backgroundColor = '#00FF0B';
-                        config.data.datasets[0].borderColor = '#00FF0B';
-                    }
-
-                    if (config.data.labels.length === 50) {
-                        config.data.labels.shift();
-                        config.data.datasets[0].data.shift();
-                    }
-                    config.data.labels.push(data.time);
-                    config.data.datasets[0].data.push(data.value);
-                    lineChart.update();
-                }
-            }
-        });
-
-        $.getJSON("http://127.0.0.1:5000/streams", function (data) {
-            console.log(data);
-            $.each(data, function (index, item) {
-                console.log(item.stream_name);
-                $('#deviceList').append(
-                    $('<option></option>').val(item.stream_id).html(item.stream_name)
-                );
-            });
-        });
 
         const config = {
             type: 'line',
@@ -101,7 +58,7 @@
                 responsive: true,
                 title: {
                     display: true,
-                    text: 'Creating Real-Time Charts with Flask'
+                    text: 'Real time noise chart'
                 },
                 scales: {
                     xAxes: [{
@@ -125,31 +82,56 @@
                 }
             }
         };
+        //Used to retrieve list of streams
+        const btnEl = document.getElementById(DOMElements.btnAddChart);
+        let i = 0;
+        btnEl.addEventListener('click', function () {
+            const deviceList = document.getElementById(DOMElements.deviceSelectList);
+            const selectedStreamId = parseInt(deviceList.options[deviceList.selectedIndex].value);
+            if (typeof selectedStreamId == 'number') {
+                console.log(selectedStreamId);
+                createChart(i);
+                const context = document.getElementById(`canvas_${i}`).getContext('2d');
+                i++;
+                const lineChart = new Chart(context, config);
 
-        const context = document.getElementById('canvas').getContext('2d');
+                const source = new EventSource(`/chart-data/${selectedStreamId}`);
+                source.onerror = function(event){
+                    console.log(event);
+                }
+                source.onmessage = function (event) {
+                    const threshold = 50;
+                    console.log('on message');
+                    const data = JSON.parse(event.data);
+                    if (data.value >= threshold) {
+                        config.data.datasets[0].backgroundColor = '#A70200';
+                        config.data.datasets[0].borderColor = '#A70200';
+                    } else {
+                        config.data.datasets[0].backgroundColor = '#00FF0B';
+                        config.data.datasets[0].borderColor = '#00FF0B';
+                    }
 
-        const lineChart = new Chart(context, config);
-
-        const source = new EventSource("/chart-data");
-        source.onmessage = function (event) {
-            const threshold = 50;
-            const data = JSON.parse(event.data);
-            if (data.value >= threshold) {
-                config.data.datasets[0].backgroundColor = '#A70200';
-                config.data.datasets[0].borderColor = '#A70200';
-            } else {
-                config.data.datasets[0].backgroundColor = '#00FF0B';
-                config.data.datasets[0].borderColor = '#00FF0B';
+                    if (config.data.labels.length === 50) {
+                        config.data.labels.shift();
+                        config.data.datasets[0].data.shift();
+                    }
+                    config.data.labels.push(data.time);
+                    config.data.datasets[0].data.push(data.value);
+                    lineChart.update();
+                }
             }
+        });
 
-            if (config.data.labels.length === 50) {
-                config.data.labels.shift();
-                config.data.datasets[0].data.shift();
-            }
-            config.data.labels.push(data.time);
-            config.data.datasets[0].data.push(data.value);
-            lineChart.update();
-        }
+        $.getJSON("http://127.0.0.1:5000/streams", function (data) {
+            console.log(data);
+            $.each(data, function (index, item) {
+                $('#deviceList').append(
+                    $('<option></option>').val(index).html(item)
+                );
+            });
+        });
+
+
     });
 
     function createChart(stream_id) {
