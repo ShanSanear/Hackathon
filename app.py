@@ -6,7 +6,7 @@ from statistics import mean
 import numpy
 import pyaudio
 
-from flask import Flask, Response, render_template
+from flask import Flask, Response, render_template, request
 
 from audio import RATE, CHUNK, RECORD_SECONDS, FORMAT, CHANNELS
 
@@ -43,14 +43,18 @@ class DataCollector:
         def get_data():
             while True:
                 json_data = json.dumps(
-                    {'time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'value': data_collector.read_from_stream()})
+                    {'time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                     'value': data_collector.read_from_stream()}
+                )
                 yield f"data:{json_data}\n\n"
                 time.sleep(self.time_interval)
 
         return Response(get_data(), mimetype='text/event-stream')
 
-    def change_configuration(self):
-        pass
+    def change_configuration(self, configuration):
+        if 'time_interval' in configuration:
+            time_interval = configuration['time_interval']
+            self.time_interval = time_interval
 
 
 app = Flask(__name__)
@@ -67,9 +71,11 @@ def get_chart_data():
     return data_collector.get_chart_data()
 
 
-@app.route('/configuration')
+@app.route('/configuration', methods=['POST'])
 def change_configuration():
-    return data_collector.change_configuration()
+    configuration_data = request.get_json()
+    return data_collector.change_configuration(configuration_data)
+
 
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)
