@@ -8,7 +8,6 @@ import numpy
 import pyaudio
 from flask import Response
 
-from app import data_collector
 from audio import FORMAT, CHANNELS, RATE, CHUNK, RECORD_SECONDS
 
 
@@ -46,7 +45,7 @@ class DataCollector:
             while True:
                 json_data = json.dumps(
                     {'time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                     'value': data_collector.read_from_stream()}
+                     'value': self.read_from_stream()}
                 )
                 yield f"data:{json_data}\n\n"
                 time.sleep(self.time_interval)
@@ -58,7 +57,7 @@ class DataCollector:
             while True:
                 json_data = json.dumps(
                     {'time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                     'value': data_collector.read_from_stream(stream_number)}
+                     'value': self.read_from_stream(stream_number)}
                 )
                 yield f"data:{json_data}\n\n"
                 time.sleep(self.time_interval)
