@@ -14,6 +14,9 @@ cron.start()
 
 @cron.task('interval', seconds=10)
 def job_function():
+    sql_server_ip = "1.1.1.1"
+    api_name = "Hackathon"
+
     print("CRON JOB")
 
 
@@ -47,6 +50,7 @@ def create_stream():
     device_index: int = configuration_data['device_index']
     device_name: str = configuration_data['device_name']
     data_collector.create_data_point(device_index, device_name)
+    return "Stream created"
 
 
 @app.route('/streams', methods=['GET'])
