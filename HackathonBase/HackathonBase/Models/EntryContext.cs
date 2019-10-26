@@ -5,6 +5,7 @@ namespace HackathonBase.Models
     public class EntryContext : DbContext
     {
         public DbSet<Entry> Entries { get; set; }
+        public DbSet<Device> Devices { get; set; }
 
         public EntryContext(DbContextOptions options) : base(options)
         {
