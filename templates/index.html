@@ -37,7 +37,14 @@
         btnAddChart: 'addChart'
     };
     $(document).ready(function () {
-
+        $.getJSON("http://127.0.0.1:5000/audio_devices", function (data) {
+            console.log(data);
+            $.each(data, function (index, item) {
+                $('#deviceList').append(
+                    $('<option></option>').val(item.index).html(item.name)
+                );
+            });
+        });
         const config = {
             type: 'line',
             data: {
@@ -88,20 +95,23 @@
         btnEl.addEventListener('click', function () {
             const deviceList = document.getElementById(DOMElements.deviceSelectList);
             const selectedStreamId = parseInt(deviceList.options[deviceList.selectedIndex].value);
+            const selectedStreamName = deviceList.options[deviceList.selectedIndex].text;
+            createStream(selectedStreamId, selectedStreamName);
+            config.data.datasets[0].label = selectedStreamName;
             if (typeof selectedStreamId == 'number') {
                 console.log(selectedStreamId);
                 createChart(i);
                 const context = document.getElementById(`canvas_${i}`).getContext('2d');
                 i++;
                 const lineChart = new Chart(context, config);
-
                 const source = new EventSource(`/chart-data/${selectedStreamId}`);
-                source.onerror = function(event){
+
+                source.onerror = function (event) {
                     console.log(event);
                 }
+
                 source.onmessage = function (event) {
                     const threshold = 50;
-                    console.log('on message');
                     const data = JSON.parse(event.data);
                     if (data.value >= threshold) {
                         config.data.datasets[0].backgroundColor = '#A70200';
@@ -117,20 +127,11 @@
                     }
                     config.data.labels.push(data.time);
                     config.data.datasets[0].data.push(data.value);
+                    console.log(event.target);
                     lineChart.update();
                 }
             }
         });
-
-        $.getJSON("http://127.0.0.1:5000/streams", function (data) {
-            console.log(data);
-            $.each(data, function (index, item) {
-                $('#deviceList').append(
-                    $('<option></option>').val(index).html(item)
-                );
-            });
-        });
-
 
     });
 
@@ -141,6 +142,26 @@
 
     function getCanvas(stream_id) {
         return `<canvas id="canvas_${stream_id}"></canvas>`;
+    }
+
+    function createStream(deviceIndex, deviceName) {
+        $.ajax({
+            url: '/create_stream',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                device_index: deviceIndex,
+                device_name: deviceName
+            }),
+            dataType: 'json',
+            success: function (e) {
+                console.log('stream has been created');
+                console.log(e);
+            },
+            error: function(err) {
+                console.log(err);
+            }
+        });
     }
 
 </script>

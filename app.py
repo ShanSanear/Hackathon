@@ -48,6 +48,7 @@ def change_configuration():
 def create_stream():
     configuration_data = request.get_json()
     device_index: int = configuration_data['device_index']
+    print(device_index, type(device_index))
     device_name: str = configuration_data['device_name']
     data_collector.create_data_point(device_index, device_name)
     return "Stream created"
