@@ -55,6 +55,25 @@ namespace HackathonBase.Controllers
                 x =>
                     DateTime.Compare(x.StartTime, startTime) >= 0 &&
                     DateTime.Compare(x.EndTime, endTime) <= 0).ToList();
+            var rand = new Random();
+            for (var i = 0; i <= 100; i++)
+            {
+                entries.Add(new Entry
+                {
+                    Id = i,
+                    StartTime = DateTime.UtcNow,
+                    EndTime = DateTime.UtcNow,
+                    Average = rand.Next(maxValue: 100)
+                });
+            
+                entries.Add(new Entry
+                {
+                    Id = i+1,
+                    StartTime = DateTime.UtcNow,
+                    EndTime = DateTime.UtcNow,
+                    Average = rand.Next(maxValue: 100)
+                });
+            }
 
             return Json(entries);
         }
