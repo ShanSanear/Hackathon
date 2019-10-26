@@ -6,6 +6,7 @@ import atexit
 
 from data_collector import DataCollector
 
+
 app = Flask(__name__)
 cron = APScheduler()
 cron.init_app(app)
@@ -19,9 +20,7 @@ def job_function():
 
     print("CRON JOB")
 
-
 data_collector = DataCollector()
-
 
 @app.route('/')
 def index():
