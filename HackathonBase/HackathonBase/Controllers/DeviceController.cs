@@ -11,9 +11,9 @@ namespace HackathonBase.Controllers
     [ApiController]
     public class DeviceController : Controller
     {
-        private readonly DeviceContext _context;
+        private readonly EntryContext _context;
 
-        public DeviceController(DeviceContext context)
+        public DeviceController(EntryContext context)
         {
             _context = context;
         }
@@ -34,15 +34,10 @@ namespace HackathonBase.Controllers
         [HttpPost]
         public IActionResult Create(IEnumerable<Device> devices)
         {
-            if (devices == null)
+            if (devices == null || !devices.Any())
                 return NoContent();
-
-            if (!devices.Any())
-            {
-                return Ok();
-            }
-
-            foreach (Device device in devices)
+            
+            foreach (var device in devices)
             {
                 _context.Add(device);
             }
