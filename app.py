@@ -1,7 +1,9 @@
+import json
 import os
 import time
 
 import pyaudio
+import urllib3
 from flask import Flask, render_template, request, jsonify
 from flask_apscheduler import APScheduler
 
@@ -11,7 +13,7 @@ from numpy import average
 
 from data_collector import DataCollector
 
-
+urllib3.disable_warnings('InsecureRequestWarning')
 app = Flask(__name__)
 cron = APScheduler()
 cron.init_app(app)
@@ -19,6 +21,7 @@ data_collector = DataCollector()
 
 
 def map_stream_data(stream_data):
+    stream_data = [json.loads(point) for point in stream_data]
     tmp = {'Average': average([point['value'] for point in stream_data]),
            'StartTime': stream_data[0]['time'],
            'EndTime': stream_data[-1]['time']}
@@ -26,13 +29,14 @@ def map_stream_data(stream_data):
 
 
 def send_data_to_database(stream_data, device_name):
-    endpoint_device = '127.0.0.1:5000/api/device'
-    endpoint_entry = '127.0.0.1:5000/api/entry'
+    endpoint_device = 'http://127.0.0.1:5000/api/device'
+    endpoint_entry = 'http://127.0.0.1:5000/api/entry'
     mapped_stream_data = map_stream_data(stream_data)
     mapped_stream_data['Device'] = {
         'Name': device_name
     }
-    r = requests.post(endpoint_entry, json={"key": "value"})
+    r = requests.post(endpoint_entry, json={"key": "value"}, verify=False)
+    print(f"Response: {r.json()}")
 
 
 @cron.task(id='job_function', trigger='interval', seconds=10)
