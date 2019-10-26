@@ -13,7 +13,7 @@ from numpy import average
 
 from data_collector import DataCollector
 
-urllib3.disable_warnings('InsecureRequestWarning')
+urllib3.disable_warnings()
 app = Flask(__name__)
 cron = APScheduler()
 cron.init_app(app)
@@ -36,17 +36,13 @@ def send_data_to_database(stream_data, device_name):
         'Name': device_name
     }
     r = requests.post(endpoint_entry, json={"key": "value"}, verify=False)
-    print(f"Response: {r.json()}")
+    print(f"{r}")
 
 
 @cron.task(id='job_function', trigger='interval', seconds=10)
 def job_function():
     # TODO Sending data to database
-    sql_server_ip = "1.1.1.1"
-    api_name = "Hackathon"
-
     print("CRON JOB {}".format(time.time()))
-    stream_infos = data_collector.stream_infos
     data = data_collector.fetch_stored_data()
     computer_name = os.getenv("COMPUTER_NAME", "Unknown")
     for device_id, stream_data in data.items():
@@ -66,7 +62,7 @@ def index():
 
 @app.route('/archive')
 def archive():
-    return render_template('archive.html');
+    return render_template('archive.html')
 
 @app.route('/chart-data/<stream_number>')
 def get_single_chart_data(stream_number):
