@@ -23,7 +23,7 @@ data_collector = DataCollector()
 def map_stream_data(stream_data):
     stream_data = [json.loads(point) for point in stream_data]
     avg: float = average([point['value'] for point in stream_data])
-    tmp = {'Average': average([point['value'] for point in stream_data]),
+    tmp = {'average': average([point['value'] for point in stream_data]),
            'StartTime': stream_data[0]['time'],
            'EndTime': stream_data[-1]['time']}
     return tmp
@@ -31,26 +31,29 @@ def map_stream_data(stream_data):
 
 def create_device(device_name):
     endpoint_device = 'http://127.0.0.1:5000/api/device'
-    r = requests.post(endpoint_device, json={"name" : device_name}, verify=False)
+    headers = {'Content-type': 'application/json'}
+    r = requests.post(endpoint_device, json={"name": device_name}, headers=headers, verify=False)
     print(f"{endpoint_device} : {r}")
+    device_id = r.json()
+    return device_id
 
 def send_data_to_database(stream_data, device_name):
     endpoint_entry = 'http://127.0.0.1:5000/api/entry'
-    create_device(device_name)
+    device_id = create_device(device_name)
     mapped_stream_data = map_stream_data(stream_data)
-    # mapped_stream_data['Device'] = {
-    #     'Name': device_name
-    # }
-    r = requests.post(endpoint_entry, json=json.dumps(mapped_stream_data), verify=False)
+    mapped_stream_data['Device'] = {
+        'Id': device_id
+    }
+    headers = {'Content-type': 'application/json'}
+    r = requests.post(endpoint_entry, json=mapped_stream_data, headers=headers, verify=False)
     print(f"{endpoint_entry} : {r}")
 
 
 @cron.task(id='job_function', trigger='interval', seconds=10)
 def job_function():
-    # TODO Sending data to database
     print("CRON JOB {}".format(time.time()))
     data = data_collector.fetch_stored_data()
-    computer_name = os.getenv("COMPUTER_NAME", "Unknown")
+    computer_name = os.getenv("COMPUTERNAME", "Unknown")
     for device_id, stream_data in data.items():
         device_name = f"{computer_name}_{device_id}"
         send_data_to_database(stream_data, device_name)

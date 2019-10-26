@@ -33,7 +33,11 @@ class DataCollector:
 
     def read_from_stream(self, stream_number=1):
         frames = []
-        stream = self.stream_objects[int(stream_number)]
+        try:
+            stream = self.stream_objects[int(stream_number)]
+        except KeyError:
+            print("Waiting for creating stream")
+            return 0.0
         stream: pyaudio.Stream
         if stream.is_stopped():
             stream.start_stream()
