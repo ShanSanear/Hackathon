@@ -61,11 +61,6 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/chart-data')
-def get_chart_data():
-    return data_collector.get_chart_data()
-
-
 @app.route('/chart-data/<stream_number>')
 def get_single_chart_data(stream_number):
     return data_collector.get_single_stream_data(int(stream_number))
