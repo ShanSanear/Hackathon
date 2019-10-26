@@ -58,6 +58,8 @@
                 dataType: 'json',
                 success: function (result) {
                     console.log(result);
+                    let context = document.getElementById('canvas');
+                    createChart(result,context);
                 },
                 error: function (err) {
                     console.log(`ERROR: ${err.message}`);
@@ -66,7 +68,63 @@
         });
     });
 
+    function createChart(data, ctx,) {
+        let config = createBaseConfig(data);
+        var myLineChart = new Chart(ctx,config);
+    }
 
+function createBaseConfig(data) {
+        let times = [];
+        let avg = [];
+        data.forEach(x => times.push(x.startTime));
+        data.forEach(x => avg.push(x.average));
+
+        const config = {
+            type: 'line',
+            data: {
+                labels: times,
+                datasets: [{
+                    label: "Sound DB",
+                    backgroundColor: 'rgb(0,255,11)',
+                    borderColor: 'rgb(0,255,11)',
+                    data: avg,
+                    fill: false,
+                }],
+            },
+            options: {
+                tooltips: {
+                    enabled: false,
+                    animationEnabled: false
+                },
+                responsive: true,
+                title: {
+                    display: true,
+                    text: 'Real time noise chart'
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Time'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Value'
+                        },
+                        ticks: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }]
+                }
+            }
+        };
+        return config;
+    }
 </script>
 
 </body>
