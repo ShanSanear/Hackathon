@@ -24,7 +24,7 @@ namespace HackathonBase.Controllers
             if (device == null)
                 return NoContent();
 
-            _context.Add(device);
+            _context.Update(device);
             _context.SaveChanges();
 
             return Json(device.Id);
