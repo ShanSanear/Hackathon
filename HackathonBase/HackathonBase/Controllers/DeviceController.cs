@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using HackathonBase.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +24,12 @@ namespace HackathonBase.Controllers
         {
             if (device == null)
                 return NoContent();
+
+            Device alreadyExistingDevice = _context.Devices.ToList().Find(x=>x.Name == device.Name);
+            if (alreadyExistingDevice != null)
+            {
+                return Json(alreadyExistingDevice.Id);
+            }
 
             _context.Update(device);
             _context.SaveChanges();
