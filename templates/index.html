@@ -46,10 +46,10 @@
 
     $(document).ready(function () {
         updateOptions();
-        const config = createBaseConfig();
         const btn = document.getElementById(DOMElements.btnAddChart);
 
         btn.addEventListener('click', function () {
+                const config = createBaseConfig();
                 const deviceList = document.getElementById(DOMElements.deviceSelectList);
                 const selectedStreamId = parseInt(deviceList.options[deviceList.selectedIndex].value);
                 const selectedStreamName = deviceList.options[deviceList.selectedIndex].text;
