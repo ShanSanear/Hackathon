@@ -20,17 +20,17 @@ namespace HackathonBase.Controllers
             _context = context;
         }
 
-        [HttpPost]
-        public IActionResult Create(Entry entry)
-        {
-            if (entry == null)
-                return NoContent();
-
-            _context.Add(entry);
-            _context.SaveChanges();
-
-            return Ok();
-        }
+//        [HttpPost]
+//        public IActionResult Create(Entry entry)
+//        {
+//            if (entry == null)
+//                return NoContent();
+//
+//            _context.Add(entry);
+//            _context.SaveChanges();
+//
+//            return Ok();
+//        }
 
         [HttpPost]
         public IActionResult Create(IEnumerable<Entry> entries)
