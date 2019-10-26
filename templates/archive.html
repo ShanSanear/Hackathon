@@ -38,31 +38,35 @@
 <!--suppress JSUnresolvedLibraryURL -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
 <script>
-    $.getJSON('http://localhost:5000/entry', function (data) {
-        console.log(data);
-        $.each(data, function (index, item) {
-            $('#deviceList').append(
-                $('<option></option>').val(item.index).html(item.name)
-            );
+    $(document).ready(function () {
+
+        let btn = document.getElementById('submitForm');
+        console.log(btn);
+        btn.addEventListener('click', function () {
+            let data = {
+                startTime: document.getElementById('inputFromDate').value,
+                endTime: document.getElementById('inputToDate').value
+            };
+
+            let params = JSON.stringify(data);
+            console.log(params);
+            $.ajax({
+                url: `http://localhost:5000/api/entry`,
+                type: 'get',
+                contentType: 'application/json',
+                data: params,
+                dataType: 'json',
+                success: function (result) {
+                    console.log(result);
+                },
+                error: function (err) {
+                    console.log(`ERROR: ${err.message}`);
+                }
+            });
         });
     });
 
-            $.ajax({
-            url: 'http://localhost:5000/entry',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                startTime: document.getElementById('#inputFromDate').value,
-                endTime: document.getElementById('#inputToDate').value
-            }),
-            dataType: 'json',
-            success: function (result) {
-               console.log(result);
-            },
-            error: function (err) {
-                console.log(`ERROR: ${err.message}`);
-            }
-        });
+
 </script>
 
 </body>
