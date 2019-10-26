@@ -35,15 +35,10 @@ namespace HackathonBase.Controllers
         [HttpPost]
         public IActionResult Create(IEnumerable<Entry> entries)
         {
-            if (entries == null)
+            if (entries == null || !entries.Any())
                 return NoContent();
 
-            if (!entries.Any())
-            {
-                return Ok();
-            }
-
-            foreach (Entry entry in entries)
+            foreach (var entry in entries)
             {
                 _context.Add(entry);
             }
@@ -54,14 +49,14 @@ namespace HackathonBase.Controllers
         }
 
         [HttpGet]
-        public List<Entry> Get(DateTime startTime, DateTime endTime)
+        public IActionResult Get(DateTime startTime, DateTime endTime)
         {
             List<Entry> entries = _context.Entries.Where(
                 x =>
                     DateTime.Compare(x.StartTime, startTime) >= 0 &&
                     DateTime.Compare(x.EndTime, endTime) <= 0).ToList();
 
-            return entries;
+            return Json(entries);
         }
     }
 }

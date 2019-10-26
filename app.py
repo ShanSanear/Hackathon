@@ -64,6 +64,9 @@ def change_sending_data_interval():
 def index():
     return render_template('index.html')
 
+@app.route('/archive')
+def archive():
+    return render_template('archive.html');
 
 @app.route('/chart-data/<stream_number>')
 def get_single_chart_data(stream_number):
