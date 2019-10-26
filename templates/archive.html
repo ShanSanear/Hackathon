@@ -43,16 +43,16 @@
         let btn = document.getElementById('submitForm');
         console.log(btn);
         btn.addEventListener('click', function () {
-            let data = {
-                startTime: document.getElementById('inputFromDate').value,
-                endTime: document.getElementById('inputToDate').value
+            let dates = {
+                StartTime: document.getElementById('inputFromDate').value,
+                EndTime: document.getElementById('inputToDate').value
             };
 
-            let params = JSON.stringify(data);
+            let params = JSON.stringify(dates);
             console.log(params);
             $.ajax({
-                url: `http://localhost:5000/api/entry`,
-                type: 'get',
+                url: `http://localhost:5000/api/entry/post`,
+                type: 'post',
                 contentType: 'application/json',
                 data: params,
                 dataType: 'json',

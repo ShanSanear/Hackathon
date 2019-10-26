@@ -31,35 +31,23 @@ namespace HackathonBase.Controllers
 
             return Ok();
         }
-
-        [HttpGet]
-        public IActionResult Get(DateTime startTime, DateTime endTime)
+        
+        [HttpPost]
+        [Route("[action]")]
+        public IActionResult Post([FromBody] Dates dates)
         {
             List<Entry> entries = _context.Entries.Where(
                 x =>
-                    DateTime.Compare(x.StartTime, startTime) >= 0 &&
-                    DateTime.Compare(x.EndTime, endTime) <= 0).ToList();
-            var rand = new Random();
-            for (var i = 0; i <= 100; i++)
-            {
-                entries.Add(new Entry
-                {
-                    Id = i,
-                    StartTime = DateTime.UtcNow,
-                    EndTime = DateTime.UtcNow,
-                    Average = rand.Next(maxValue: 100)
-                });
-            
-                entries.Add(new Entry
-                {
-                    Id = i+1,
-                    StartTime = DateTime.UtcNow,
-                    EndTime = DateTime.UtcNow,
-                    Average = rand.Next(maxValue: 100)
-                });
-            }
+                    DateTime.Compare(x.StartTime, dates.StartTime) >= 0 &&
+                    DateTime.Compare(x.EndTime, dates.EndTime) <= 0).ToList();
 
             return Json(entries);
         }
+    }
+
+    public class Dates
+    {
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
     }
 }
