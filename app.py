@@ -1,3 +1,4 @@
+import os
 import time
 
 import pyaudio
@@ -5,6 +6,8 @@ from flask import Flask, render_template, request, jsonify
 from flask_apscheduler import APScheduler
 
 import atexit
+import requests
+from numpy import average
 
 from data_collector import DataCollector
 
@@ -12,6 +15,25 @@ from data_collector import DataCollector
 app = Flask(__name__)
 cron = APScheduler()
 cron.init_app(app)
+data_collector = DataCollector()
+
+
+def map_stream_data(stream_data):
+    tmp = {'Average': average([point['value'] for point in stream_data]),
+           'StartTime': stream_data[0]['time'],
+           'EndTime': stream_data[-1]['time']}
+    return tmp
+
+
+def send_data_to_database(stream_data, device_name):
+    endpoint_device = '127.0.0.1:5000/api/device'
+    endpoint_entry = '127.0.0.1:5000/api/entry'
+    mapped_stream_data = map_stream_data(stream_data)
+    mapped_stream_data['Device'] = {
+        'Name': device_name
+    }
+    r = requests.post(endpoint_entry, json={"key": "value"})
+
 
 @cron.task(id='job_function', trigger='interval', seconds=10)
 def job_function():
@@ -20,7 +42,12 @@ def job_function():
     api_name = "Hackathon"
 
     print("CRON JOB {}".format(time.time()))
-data_collector = DataCollector()
+    stream_infos = data_collector.stream_infos
+    data = data_collector.fetch_stored_data()
+    computer_name = os.getenv("COMPUTER_NAME", "Unknown")
+    for device_id, stream_data in data.items():
+        device_name = f"{computer_name}_{device_id}"
+        send_data_to_database(stream_data, device_name)
 
 
 @app.route('/new_interval')
@@ -61,7 +88,7 @@ def create_stream():
 
 @app.route('/streams', methods=['GET'])
 def get_streams():
-    message = data_collector.get_stream_infos()
+    message = data_collector.stream_infos
     resp = jsonify(message)
     resp.status_code = 200
     print(resp)
@@ -86,4 +113,4 @@ def get_audio_devices():
 if __name__ == '__main__':
     cron.start()
     atexit.register(lambda: cron.shutdown(wait=False))
-    app.run(debug=True, threaded=True, use_reloader=False)
+    app.run(debug=True, threaded=True, use_reloader=False, port=5010)

@@ -1,6 +1,7 @@
 import audioop
 import json
 import time
+from collections import defaultdict
 from datetime import datetime
 from statistics import mean
 from threading import Lock
@@ -17,6 +18,7 @@ class DataCollector:
         self.stream_infos = {}
         self.stream_objects = {}
         self.time_interval = 0.5
+        self.stored_stream_data = defaultdict(list)
 
     def create_data_point(self, device_index=1, device_name="Default stream name"):
         if device_index in self.stream_infos:
@@ -42,21 +44,6 @@ class DataCollector:
             frames.append(numpy.log10(rms) * 20)
         return mean(frames)
 
-    def get_chart_data(self):
-        def get_data():
-            while True:
-                lock = Lock()
-                lock.acquire(blocking=True)
-                json_data = json.dumps(
-                    {'time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                     'value': self.read_from_stream()}
-                )
-                yield f"data:{json_data}\n\n"
-                time.sleep(self.time_interval)
-                lock.release()
-
-        return Response(get_data(), mimetype='text/event-stream')
-
     def get_single_stream_data(self, stream_number):
         def get_data():
             while True:
@@ -66,7 +53,7 @@ class DataCollector:
                     {'time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                      'value': self.read_from_stream(stream_number)}
                 )
-                print("Stream number: {}".format(stream_number), "Json data: {}".format(json_data))
+                self.stored_stream_data[stream_number].append(json_data)
                 yield f"data:{json_data}\n\n"
                 time.sleep(self.time_interval)
                 lock.release()
@@ -78,5 +65,7 @@ class DataCollector:
             time_interval = configuration['time_interval']
             self.time_interval = time_interval
 
-    def get_stream_infos(self):
-        return self.stream_infos
+    def fetch_stored_data(self):
+        stored_data = self.stored_stream_data
+        self.stored_stream_data = defaultdict(list)
+        return stored_data
