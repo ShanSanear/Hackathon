@@ -1,3 +1,5 @@
+import time
+
 import pyaudio
 from flask import Flask, render_template, request, jsonify
 from flask_apscheduler import APScheduler
@@ -10,17 +12,22 @@ from data_collector import DataCollector
 app = Flask(__name__)
 cron = APScheduler()
 cron.init_app(app)
-cron.start()
 
-
-@cron.task('interval', seconds=10)
+@cron.task(id='job_function', trigger='interval', seconds=10)
 def job_function():
+    # TODO Sending data to database
     sql_server_ip = "1.1.1.1"
     api_name = "Hackathon"
 
-    print("CRON JOB")
-
+    print("CRON JOB {}".format(time.time()))
 data_collector = DataCollector()
+
+
+@app.route('/new_interval')
+def change_sending_data_interval():
+    cron.scheduler.reschedule_job(job_id='job_function', trigger='interval', seconds=20)
+    return "Rescheduled"
+
 
 @app.route('/')
 def index():
@@ -45,10 +52,9 @@ def change_configuration():
 
 @app.route('/create_stream', methods=['POST'])
 def create_stream():
-    configuration_data = request.get_json()
-    device_index: int = configuration_data['device_index']
-    print(device_index, type(device_index))
-    device_name: str = configuration_data['device_name']
+    stream_configuration = request.get_json()
+    device_index: int = stream_configuration['device_index']
+    device_name: str = stream_configuration['device_name']
     data_collector.create_data_point(device_index, device_name)
     return "Stream created"
 
@@ -74,10 +80,10 @@ def get_audio_devices():
                and device['maxInputChannels']]
     resp = jsonify(devices)
     resp.status_code = 200
-    print(resp)
     return resp
 
 
 if __name__ == '__main__':
+    cron.start()
     atexit.register(lambda: cron.shutdown(wait=False))
-    app.run(debug=True, threaded=True)
+    app.run(debug=True, threaded=True, use_reloader=False)
