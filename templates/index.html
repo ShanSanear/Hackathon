@@ -31,13 +31,85 @@
 <!--suppress JSUnresolvedLibraryURL -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
 <script>
+    let i = 0;
+    const threshold = 50;
+
     const DOMElements = {
         deviceSelectList: 'deviceList',
         chartWrapper: 'chartWrapper',
         btnAddChart: 'addChart'
     };
+
+    const urls = {
+        audio_devices: "http://127.0.0.1:5000/audio_devices"
+    };
+
     $(document).ready(function () {
-        $.getJSON("http://127.0.0.1:5000/audio_devices", function (data) {
+        updateOptions();
+        const config = createBaseConfig();
+        const btn = document.getElementById(DOMElements.btnAddChart);
+
+        btn.addEventListener('click', function () {
+                const deviceList = document.getElementById(DOMElements.deviceSelectList);
+                const selectedStreamId = parseInt(deviceList.options[deviceList.selectedIndex].value);
+                const selectedStreamName = deviceList.options[deviceList.selectedIndex].text;
+
+                createStream(selectedStreamId, selectedStreamName);
+                config.data.datasets[0].label = selectedStreamName;
+
+                if (typeof selectedStreamId == 'number') {
+                    createChart(i);
+                    const context = document.getElementById(`canvas_${i}`).getContext('2d');
+                    const lineChart = new Chart(context, config);
+                    const source = new EventSource(`/chart-data/${selectedStreamId}`);
+
+                    source.addEventListener('message', function (event) {
+                        console.log(`Updating stream: ${selectedStreamName}`);
+                        updateChart(event, config, lineChart);
+                    });
+
+                    source.addEventListener('error', function (event) {
+                        console.log(`Updating stream: ${selectedStreamName} failed!!!!!!`);
+                        console.log(event);
+                    });
+                    i++;
+                }
+            }
+        );
+
+    });
+
+    function createChart(stream_id) {
+        let chartWrapper = document.getElementById(DOMElements.chartWrapper);
+        chartWrapper.insertAdjacentHTML("beforeend", getCanvas(stream_id));
+    }
+
+    function getCanvas(stream_id) {
+        return `<canvas id="canvas_${stream_id}"></canvas>`;
+    }
+
+    function createStream(deviceIndex, deviceName) {
+        $.ajax({
+            url: '/create_stream',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                device_index: deviceIndex,
+                device_name: deviceName
+            }),
+            dataType: 'json',
+            success: function (e) {
+                console.log(`Stream has been created for device: ${deviceName}`);
+            },
+            error: function (err) {
+                console.log(`Stream error for device: ${deviceName} !!!!!`);
+                console.log(`Stream was not created msg: ${err.message}`);
+            }
+        });
+    }
+
+    function updateOptions() {
+        $.getJSON(urls.audio_devices, function (data) {
             console.log(data);
             $.each(data, function (index, item) {
                 $('#deviceList').append(
@@ -45,6 +117,9 @@
                 );
             });
         });
+    }
+
+    function createBaseConfig() {
         const config = {
             type: 'line',
             data: {
@@ -89,79 +164,27 @@
                 }
             }
         };
-        //Used to retrieve list of streams
-        const btnEl = document.getElementById(DOMElements.btnAddChart);
-        let i = 0;
-        btnEl.addEventListener('click', function () {
-            const deviceList = document.getElementById(DOMElements.deviceSelectList);
-            const selectedStreamId = parseInt(deviceList.options[deviceList.selectedIndex].value);
-            const selectedStreamName = deviceList.options[deviceList.selectedIndex].text;
-            createStream(selectedStreamId, selectedStreamName);
-            config.data.datasets[0].label = selectedStreamName;
-            if (typeof selectedStreamId == 'number') {
-                console.log(selectedStreamId);
-                createChart(i);
-                const context = document.getElementById(`canvas_${i}`).getContext('2d');
-                i++;
-                const lineChart = new Chart(context, config);
-                const source = new EventSource(`/chart-data/${selectedStreamId}`);
 
-                source.onerror = function (event) {
-                    console.log(event);
-                }
-
-                source.onmessage = function (event) {
-                    const threshold = 50;
-                    const data = JSON.parse(event.data);
-                    if (data.value >= threshold) {
-                        config.data.datasets[0].backgroundColor = '#A70200';
-                        config.data.datasets[0].borderColor = '#A70200';
-                    } else {
-                        config.data.datasets[0].backgroundColor = '#00FF0B';
-                        config.data.datasets[0].borderColor = '#00FF0B';
-                    }
-
-                    if (config.data.labels.length === 50) {
-                        config.data.labels.shift();
-                        config.data.datasets[0].data.shift();
-                    }
-                    config.data.labels.push(data.time);
-                    config.data.datasets[0].data.push(data.value);
-                    console.log(event.target);
-                    lineChart.update();
-                }
-            }
-        });
-
-    });
-
-    function createChart(stream_id) {
-        let chartWrapper = document.getElementById(DOMElements.chartWrapper);
-        chartWrapper.insertAdjacentHTML("beforeend", getCanvas(stream_id));
+        return config;
     }
 
-    function getCanvas(stream_id) {
-        return `<canvas id="canvas_${stream_id}"></canvas>`;
-    }
+    function updateChart(event, config, lineChart) {
+        const data = JSON.parse(event.data);
+        if (data.value >= threshold) {
+            config.data.datasets[0].backgroundColor = '#A70200';
+            config.data.datasets[0].borderColor = '#A70200';
+        } else {
+            config.data.datasets[0].backgroundColor = '#00FF0B';
+            config.data.datasets[0].borderColor = '#00FF0B';
+        }
 
-    function createStream(deviceIndex, deviceName) {
-        $.ajax({
-            url: '/create_stream',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                device_index: deviceIndex,
-                device_name: deviceName
-            }),
-            dataType: 'json',
-            success: function (e) {
-                console.log('stream has been created');
-                console.log(e);
-            },
-            error: function(err) {
-                console.log(err);
-            }
-        });
+        if (config.data.labels.length === 50) {
+            config.data.labels.shift();
+            config.data.datasets[0].data.shift();
+        }
+        config.data.labels.push(data.time);
+        config.data.datasets[0].data.push(data.value);
+        lineChart.update();
     }
 
 </script>
