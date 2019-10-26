@@ -41,9 +41,7 @@ def send_data_to_database(stream_data, device_name):
     endpoint_entry = 'http://127.0.0.1:5000/api/entry'
     device_id = create_device(device_name)
     mapped_stream_data = map_stream_data(stream_data)
-    mapped_stream_data['Device'] = {
-        'Id': device_id
-    }
+    mapped_stream_data['SourceDeviceId'] = device_id
     headers = {'Content-type': 'application/json'}
     r = requests.post(endpoint_entry, json=mapped_stream_data, headers=headers, verify=False)
     print(f"{endpoint_entry} : {r}")
@@ -69,9 +67,11 @@ def change_sending_data_interval():
 def index():
     return render_template('index.html')
 
+
 @app.route('/archive')
 def archive():
     return render_template('archive.html')
+
 
 @app.route('/chart-data/<stream_number>')
 def get_single_chart_data(stream_number):

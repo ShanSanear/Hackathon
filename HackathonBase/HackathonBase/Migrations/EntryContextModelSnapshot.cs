@@ -42,22 +42,13 @@ namespace HackathonBase.Migrations
 
                     b.Property<DateTime>("EndTime");
 
-                    b.Property<int?>("SourceDeviceId");
+                    b.Property<int>("SourceDeviceId");
 
                     b.Property<DateTime>("StartTime");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SourceDeviceId");
-
                     b.ToTable("Entries");
-                });
-
-            modelBuilder.Entity("HackathonBase.Models.Entry", b =>
-                {
-                    b.HasOne("HackathonBase.Models.Device", "SourceDevice")
-                        .WithMany()
-                        .HasForeignKey("SourceDeviceId");
                 });
 #pragma warning restore 612, 618
         }

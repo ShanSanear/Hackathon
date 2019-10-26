@@ -12,6 +12,6 @@ namespace HackathonBase.Models
         public float Average { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
-        public Device SourceDevice { get; set; }
+        public int SourceDeviceId { get; set; }
     }
 }
