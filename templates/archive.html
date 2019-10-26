@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Best noise detector made by DankTools</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-1">
+    <h1 class="text-center">Best noise detector made by DankTools</h1>
+    <h2 class="text-center">Real time data can be found <a href="/" class="btn-link">here</a></h2>
+    <div class="form-inline mt-5">
+        <div class="form-group">
+            <label class="form-label mr-2">From date</label>
+            <input type="date" id="inputFromDate" class="form-control"/>
+        </div>
+        <div class="form-group">
+            <label class="form-label mr-2">From date</label>
+            <input type="date" id="inputToDate" class="form-control"/>
+        </div>
+    </div>
+    <div class="my-5 form-inline">
+        <select name="" id="deviceList" class="form-control w-50">
+            <option>Select stream...</option>
+        </select>
+        <button class="btn btn-outline-primary ml-2" id="addChart">Add</button>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body" id="chartWrapper">
+                    <canvas id="canvas"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--suppress JSUnresolvedLibraryURL -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<!--suppress JSUnresolvedLibraryURL -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<!--suppress JSUnresolvedLibraryURL -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+<script>
+    $.getJSON('http://localhost:5000/entry', function (data) {
+        console.log(data);
+        $.each(data, function (index, item) {
+            $('#deviceList').append(
+                $('<option></option>').val(item.index).html(item.name)
+            );
+        });
+    });
+
+            $.ajax({
+            url: 'http://localhost:5000/entry',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                startTime: document.getElementById('#inputFromDate').value,
+                endTime: document.getElementById('#inputToDate').value
+            }),
+            dataType: 'json',
+            success: function (result) {
+               console.log(result);
+            },
+            error: function (err) {
+                console.log(`ERROR: ${err.message}`);
+            }
+        });
+</script>
+
+</body>
+</html>

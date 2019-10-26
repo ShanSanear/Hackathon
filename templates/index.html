@@ -7,8 +7,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css" rel="stylesheet">
 </head>
 <body>
-<div class="container mt-1">Best noise detector made by DankTools
-    <h1 class="text-center"></h1>
+<div class="container mt-1">
+    <h1 class="text-center">Best noise detector made by DankTools</h1>
+    <h2 class="text-center">Archive data can be found <a href="/archive" class="btn-link">here</a></h2>
     <div class="form-inline mt-5">
         <div class="form-group">
             <label class="form-label mr-2">Noise threshold</label>
@@ -54,13 +55,8 @@
     };
 
     const urls = {
-        audio_devices: "http://127.0.0.1:5000/audio_devices"
+        audio_devices: "http://127.0.0.1:5010/audio_devices"
     };
-
-    class Setting
-    {
-
-    }
 
     $(document).ready(function () {
         updateOptions();
