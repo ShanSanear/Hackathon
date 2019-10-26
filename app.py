@@ -22,21 +22,27 @@ data_collector = DataCollector()
 
 def map_stream_data(stream_data):
     stream_data = [json.loads(point) for point in stream_data]
+    avg: float = average([point['value'] for point in stream_data])
     tmp = {'Average': average([point['value'] for point in stream_data]),
            'StartTime': stream_data[0]['time'],
            'EndTime': stream_data[-1]['time']}
     return tmp
 
 
-def send_data_to_database(stream_data, device_name):
+def create_device(device_name):
     endpoint_device = 'http://127.0.0.1:5000/api/device'
+    r = requests.post(endpoint_device, json={"name" : device_name}, verify=False)
+    print(f"{endpoint_device} : {r}")
+
+def send_data_to_database(stream_data, device_name):
     endpoint_entry = 'http://127.0.0.1:5000/api/entry'
+    create_device(device_name)
     mapped_stream_data = map_stream_data(stream_data)
-    mapped_stream_data['Device'] = {
-        'Name': device_name
-    }
-    r = requests.post(endpoint_entry, json={"key": "value"}, verify=False)
-    print(f"{r}")
+    # mapped_stream_data['Device'] = {
+    #     'Name': device_name
+    # }
+    r = requests.post(endpoint_entry, json=json.dumps(mapped_stream_data), verify=False)
+    print(f"{endpoint_entry} : {r}")
 
 
 @cron.task(id='job_function', trigger='interval', seconds=10)
