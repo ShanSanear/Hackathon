@@ -27,24 +27,7 @@ namespace HackathonBase.Controllers
             _context.Add(device);
             _context.SaveChanges();
 
-            return Ok();
-        }
-
-
-        [HttpPost]
-        public IActionResult Create(IEnumerable<Device> devices)
-        {
-            if (devices == null || !devices.Any())
-                return NoContent();
-            
-            foreach (var device in devices)
-            {
-                _context.Add(device);
-            }
-
-            _context.SaveChanges();
-
-            return Ok();
+            return Json(device.Id);
         }
 
 

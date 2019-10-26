@@ -29,7 +29,7 @@ namespace HackathonBase.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Device");
+                    b.ToTable("Devices");
                 });
 
             modelBuilder.Entity("HackathonBase.Models.Entry", b =>

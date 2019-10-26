@@ -25,3 +25,17 @@ C:\Users\Z0005721\PycharmProjects\Hackathon\HackathonBase\HackathonBase\obj\Debu
 C:\Users\Z0005721\PycharmProjects\Hackathon\HackathonBase\HackathonBase\obj\Debug\netcoreapp2.1\HackathonBase.RazorTargetAssemblyInfo.cache
 C:\Users\Z0005721\PycharmProjects\Hackathon\HackathonBase\HackathonBase\obj\Debug\netcoreapp2.1\HackathonBase.dll
 C:\Users\Z0005721\PycharmProjects\Hackathon\HackathonBase\HackathonBase\obj\Debug\netcoreapp2.1\HackathonBase.pdb
+C:\Users\PruskiM\PycharmProjects\Hackathon\HackathonBase\HackathonBase\obj\Debug\netcoreapp2.1\HackathonBase.dll
+C:\Users\PruskiM\PycharmProjects\Hackathon\HackathonBase\HackathonBase\obj\Debug\netcoreapp2.1\HackathonBase.pdb
+C:\Users\PruskiM\PycharmProjects\Hackathon\HackathonBase\HackathonBase\bin\Debug\netcoreapp2.1\HackathonBase.deps.json
+C:\Users\PruskiM\PycharmProjects\Hackathon\HackathonBase\HackathonBase\bin\Debug\netcoreapp2.1\HackathonBase.runtimeconfig.json
+C:\Users\PruskiM\PycharmProjects\Hackathon\HackathonBase\HackathonBase\bin\Debug\netcoreapp2.1\HackathonBase.runtimeconfig.dev.json
+C:\Users\PruskiM\PycharmProjects\Hackathon\HackathonBase\HackathonBase\bin\Debug\netcoreapp2.1\HackathonBase.dll
+C:\Users\PruskiM\PycharmProjects\Hackathon\HackathonBase\HackathonBase\bin\Debug\netcoreapp2.1\HackathonBase.pdb
+C:\Users\PruskiM\PycharmProjects\Hackathon\HackathonBase\HackathonBase\obj\Debug\netcoreapp2.1\HackathonBase.csprojAssemblyReference.cache
+C:\Users\PruskiM\PycharmProjects\Hackathon\HackathonBase\HackathonBase\obj\Debug\netcoreapp2.1\HackathonBase.csproj.CoreCompileInputs.cache
+C:\Users\PruskiM\PycharmProjects\Hackathon\HackathonBase\HackathonBase\obj\Debug\netcoreapp2.1\HackathonBase.RazorAssemblyInfo.cache
+C:\Users\PruskiM\PycharmProjects\Hackathon\HackathonBase\HackathonBase\obj\Debug\netcoreapp2.1\HackathonBase.RazorAssemblyInfo.cs
+C:\Users\PruskiM\PycharmProjects\Hackathon\HackathonBase\HackathonBase\obj\Debug\netcoreapp2.1\HackathonBase.AssemblyInfoInputs.cache
+C:\Users\PruskiM\PycharmProjects\Hackathon\HackathonBase\HackathonBase\obj\Debug\netcoreapp2.1\HackathonBase.AssemblyInfo.cs
+C:\Users\PruskiM\PycharmProjects\Hackathon\HackathonBase\HackathonBase\obj\Debug\netcoreapp2.1\HackathonBase.RazorTargetAssemblyInfo.cache
